@@ -57,10 +57,10 @@ export const getInflationStats = async (
 
 export const inflationGetter =
   (stats?: InflationStats) =>
-  (start: string, end: string): number => {
-    console.log(stats);
-    return stats
-      ? 100 *
-          ((stats._stats.get(end) ?? 0) / (stats._stats.get(start) ?? 1) - 1.0)
-      : 0;
-  };
+  (start: string, end: string): number =>
+    stats ? (stats._stats.get(end) ?? 0) / (stats._stats.get(start) ?? 1) : 0;
+
+export const accumulatePercentageIncreases =
+  (accumulator: number = 1.0) =>
+  ([month, value]: [string, number]) =>
+    [month, value, (accumulator *= 1 + value)] as [string, number, number];

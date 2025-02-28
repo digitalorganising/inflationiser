@@ -7,7 +7,9 @@ import {
   inflationGetter,
 } from "./statistics";
 import useSWR from "swr/immutable";
-import { addMonths, addYears } from "./dates";
+import { addYears } from "./dates";
+import Settlements from "./Settlements";
+import Copyable from "./Copyable";
 
 export default function Home() {
   const [inflationMeasure, setInflationMeasure] =
@@ -21,6 +23,9 @@ export default function Home() {
   if (stats.error) {
     console.log(stats.error);
   }
+
+  const totalPay = Object.values(settlements).reduce((c, v) => c * (1 + v), 1);
+  const totalInflation = start && end ? getInflation(start, end) : 0;
 
   useEffect(() => {
     if (stats.data?.max) {
@@ -62,7 +67,7 @@ export default function Home() {
           <span className="inline-block animate-spin">⏳</span>
         ) : null}
         {stats.error ? <span>⚠️ Error fetching inflation data!</span> : null}
-        <div className="mt-4 flex items-end border-b border-b-slate-300 pb-3 mb-3">
+        <div className="mt-4 flex items-stretch space-x-4 border-b border-b-slate-300 pb-4">
           <div className="flex flex-col grow">
             <label
               className="font-semibold text-sm text-slate-600 mb-0.5"
@@ -70,91 +75,34 @@ export default function Home() {
             >
               Start of period
             </label>
-            <input
-              className="border border-slate-300 rounded-md p-1"
-              id="start-month"
-              type="month"
-              max={end}
-              min={stats.data?.min}
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
-            />
+            {start && (
+              <input
+                className="border border-slate-300 rounded-md p-1"
+                id="start-month"
+                type="month"
+                max={end}
+                min={stats.data?.min}
+                value={start}
+                onChange={(e) => setStart(e.target.value)}
+              />
+            )}
           </div>
         </div>
-        <div>
-          <h4 className="font-semibold text-sm text-slate-600 mb-0.5">
-            Settlements
-          </h4>
-          <div className="space-y-2">
-            {Object.entries(settlements).map(([month, value]) => (
-              <div
-                key={`settlement-${month}`}
-                className="flex items-stretch space-x-2"
-              >
-                <input
-                  type="month"
-                  value={month}
-                  onChange={(e) =>
-                    setSettlements(({ [month]: _, ...oldState }) => ({
-                      ...oldState,
-                      [e.target.value]: value,
-                    }))
-                  }
-                  min={start}
-                  max={end}
-                  className="grow border border-slate-300 rounded-md p-1"
-                />
-                <input
-                  id="figure"
-                  type="number"
-                  value={value.toFixed(1)}
-                  onChange={(e) =>
-                    setSettlements((s) => ({
-                      ...s,
-                      [month]: Number(e.target.value),
-                    }))
-                  }
-                  min="0.0"
-                  max="25.0"
-                  step="0.1"
-                  className="border border-slate-300 rounded-md p-1"
-                />
-                <button
-                  className="border border-slate-300 rounded-md p-1"
-                  onClick={() =>
-                    addYears(month, 1) <= (stats.data?.max ?? "")
-                      ? setSettlements((s) => ({
-                          ...s,
-                          [addYears(month, 1)]: 0.0,
-                        }))
-                      : undefined
-                  }
-                >
-                  ➕
-                </button>
-                <button
-                  className="border border-slate-300 rounded-md p-1 disabled:opacity-50"
-                  disabled={Object.keys(settlements).length <= 1}
-                  onClick={() =>
-                    Object.keys(settlements).length > 1
-                      ? setSettlements(
-                          ({ [month]: _, ...settlements }) => settlements
-                        )
-                      : undefined
-                  }
-                >
-                  🗑️
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col border-t border-t-slate-300 pt-3 mt-3">
-            <label
-              className="font-semibold text-sm text-slate-600 mb-0.5"
-              htmlFor="end-month"
-            >
-              End of period
-            </label>
+        <Settlements
+          settlements={settlements}
+          setSettlements={setSettlements}
+          getInflation={getInflation}
+          start={start}
+          end={end}
+        />
+        <div className="flex flex-col border-t border-t-slate-300 py-4 border-b border-b-slate-300">
+          <label
+            className="font-semibold text-sm text-slate-600 mb-0.5"
+            htmlFor="end-month"
+          >
+            End of period
+          </label>
+          {end && (
             <input
               className="border border-slate-300 rounded-md p-1"
               id="end-month"
@@ -164,6 +112,32 @@ export default function Home() {
               value={end}
               onChange={(e) => setEnd(e.target.value)}
             />
+          )}
+        </div>
+        <div className="flex space-x-4 mt-4 border-b border-b-slate-300 pb-4">
+          <div className="flex flex-col text-right flex-1">
+            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right">
+              Total inflation
+            </h4>
+            <Copyable className="border-2 border-purple-300 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-purple-600">
+              {(100 * (totalInflation - 1)).toFixed(2)}%
+            </Copyable>
+          </div>
+          <div className="flex flex-col text-right flex-1">
+            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right">
+              Total pay
+            </h4>
+            <Copyable className="border-2 border-amber-300 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-amber-600">
+              {(100 * (totalPay - 1)).toFixed(2)}%
+            </Copyable>
+          </div>
+          <div className="flex flex-col text-right flex-1">
+            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right">
+              Real terms pay
+            </h4>
+            <Copyable className="border-2 border-red-400 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-red-600">
+              {(100 * (1 - totalInflation / totalPay)).toFixed(2)}%
+            </Copyable>
           </div>
         </div>
       </main>
