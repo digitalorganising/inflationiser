@@ -7,7 +7,7 @@ import {
   inflationGetter,
 } from "./statistics";
 import useSWR from "swr/immutable";
-import { addYears } from "./dates";
+import { addYears, nextMonth } from "./dates";
 import Settlements from "./Settlements";
 import Copyable from "./Copyable";
 
@@ -41,14 +41,14 @@ export default function Home() {
   useEffect(() => {
     if (start && Object.keys(settlements).length === 0) {
       setSettlements({
-        [start]: 0.0,
+        [nextMonth(start, 4)]: 0.0,
       });
     }
   }, [start]);
 
   return (
-    <div className="w-full h-dvh flex items-center justify-center">
-      <main className="border border-slate-300 shadow-md rounded-lg p-5">
+    <div className="w-full h-full flex flex-col items-center justify-center p-5">
+      <main className="border border-slate-300 shadow-md rounded-lg p-5 max-w-full">
         <h1 className="font-semibold text-2xl mb-3">Inflation vs Settlement</h1>
         <label htmlFor="inflation-measure">Inflation measure:</label>
         <select
@@ -116,7 +116,7 @@ export default function Home() {
         </div>
         <div className="flex space-x-4 mt-4 border-b border-b-slate-300 pb-4">
           <div className="flex flex-col text-right flex-1">
-            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right">
+            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right whitespace-nowrap">
               Total inflation
             </h4>
             <Copyable className="border-2 border-purple-300 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-purple-600">
@@ -124,7 +124,7 @@ export default function Home() {
             </Copyable>
           </div>
           <div className="flex flex-col text-right flex-1">
-            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right">
+            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right whitespace-nowrap">
               Total pay
             </h4>
             <Copyable className="border-2 border-amber-300 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-amber-600">
@@ -132,7 +132,7 @@ export default function Home() {
             </Copyable>
           </div>
           <div className="flex flex-col text-right flex-1">
-            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right">
+            <h4 className="font-semibold text-sm text-slate-600 mb-0.5 text-right whitespace-nowrap">
               Real terms pay
             </h4>
             <Copyable className="border-2 border-red-400 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-red-600">

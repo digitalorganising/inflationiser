@@ -25,14 +25,8 @@ export default function Settlements({
         <h4 className="font-semibold text-sm text-slate-600 mb-0.5">
           Settlements
         </h4>
-        <h4 className="font-semibold text-sm text-slate-600 mb-0.5 ml-auto w-[110px] px-1 text-right">
-          Total inflation
-        </h4>
-        <h4 className="font-semibold text-sm text-slate-600 mb-0.5 ml-2 w-[80px] px-1 text-right">
-          Total pay
-        </h4>
-        <h4 className="font-semibold text-sm text-slate-600 mb-0.5 ml-2 w-[120px] px-1 text-right">
-          Real terms pay
+        <h4 className="font-semibold text-sm text-slate-600 mb-0.5 ml-auto px-1 text-right hidden sm:inline">
+          Inflation / Pay / Real Pay
         </h4>
       </div>
       <div className="space-y-2">
@@ -56,7 +50,7 @@ export default function Settlements({
                   }
                   min={start}
                   max={end}
-                  className="grow border border-slate-300 rounded-md p-1"
+                  className="border border-slate-300 rounded-md p-1"
                 />
               </div>
               <FloatInput
@@ -97,16 +91,16 @@ export default function Settlements({
               >
                 🗑️
               </button>
-              <Copyable className="border-2 border-purple-300 rounded-md p-1 w-[110px] bg-slate-100 text-right cursor-default active:border-purple-600">
+              <Copyable className="border-2 border-purple-300 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-purple-600 hidden sm:block md:pl-5">
                 {(start ? 100 * (getInflation(start, month) - 1) : 0).toFixed(
                   2
                 )}
                 %
               </Copyable>
-              <Copyable className="border-2 border-amber-300 rounded-md p-1 w-[80px] bg-slate-100 text-right cursor-default active:border-amber-600">
+              <Copyable className="border-2 border-amber-300 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-amber-600 hidden sm:block md:pl-5">
                 {(100 * (cumulative - 1)).toFixed(2)}%
               </Copyable>
-              <Copyable className="border-2 border-red-400 rounded-md p-1 w-[120px] bg-slate-100 text-right cursor-default active:border-red-600">
+              <Copyable className="border-2 border-red-400 rounded-md p-1 bg-slate-100 text-right cursor-default active:border-red-600 hidden sm:block md:pl-5">
                 {(start
                   ? 100 * (1 - getInflation(start, month) / cumulative)
                   : 0

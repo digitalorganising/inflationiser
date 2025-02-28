@@ -39,3 +39,7 @@ export const addMonths = transform((diff: number) => (y, m) => {
   const mdiff = 12 * y + (m - 1) + diff;
   return [Math.floor(mdiff / 12), 1 + (mdiff % 12)];
 });
+
+export const nextMonth = transform(
+  (mNext: number) => (y, m) => m <= mNext ? [y, mNext] : [y + 1, mNext]
+);
