@@ -50,7 +50,7 @@ export default function Settlements({
                   }
                   min={start}
                   max={end}
-                  className="border border-slate-300 rounded-md p-1"
+                  className="border border-slate-300 rounded-md p-1 w-[125px] xs:w-auto"
                 />
               </div>
               <FloatInput
@@ -66,7 +66,7 @@ export default function Settlements({
                 min="0.0"
                 max="25.0"
                 step="0.05"
-                className="border border-slate-300 rounded-md p-1"
+                className="border border-slate-300 rounded-md p-1 min-w-[65px]"
               />
               <button
                 className="border border-slate-300 rounded-md p-1 disabled:opacity-50"

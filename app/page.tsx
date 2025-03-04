@@ -47,8 +47,8 @@ export default function Home() {
   }, [start]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-5">
-      <main className="border border-slate-300 shadow-md rounded-lg p-5 max-w-full">
+    <div className="w-full h-full flex flex-col items-center justify-center p-3 xs:p-5">
+      <main className="border border-slate-300 shadow-md rounded-lg p-3 xs:p-5 max-w-full">
         <h1 className="font-semibold text-2xl mb-3">Inflation vs Settlement</h1>
         <label htmlFor="inflation-measure">Inflation measure:</label>
         <select
