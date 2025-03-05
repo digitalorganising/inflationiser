@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import Copyable from "./Copyable";
-import { addYears } from "./dates";
+import { addMonths, addYears, nextMonth } from "./dates";
 import { accumulatePercentageIncreases } from "./statistics";
 import FloatInput from "./FloatInput";
 
@@ -12,6 +12,25 @@ type Props = {
   end?: string;
 };
 
+const getNextSettlement =
+  (end: string) =>
+  (current: string): string | undefined =>
+    [
+      () => addYears(current, 1),
+      () => nextMonth(current, 4),
+      () => addMonths(current, 6),
+      () => addMonths(current, 3),
+      () => addMonths(current, 1),
+    ].reduce<string | undefined>((nextSettlement, getDate) => {
+      if (!nextSettlement) {
+        const date = getDate();
+        if (date <= end) {
+          return date;
+        }
+      }
+      return nextSettlement;
+    }, undefined);
+
 export default function Settlements({
   settlements,
   setSettlements,
@@ -19,6 +38,7 @@ export default function Settlements({
   start,
   end,
 }: Props) {
+  const nextSettlement = getNextSettlement(end ?? "");
   return (
     <div className="py-4">
       <div className="w-full flex">
@@ -70,11 +90,11 @@ export default function Settlements({
               />
               <button
                 className="border border-slate-300 rounded-md p-1 disabled:opacity-50"
-                disabled={addYears(month, 1) > (end ?? "")}
+                disabled={nextSettlement(month) === undefined}
                 onClick={() =>
                   setSettlements((s) => ({
                     ...s,
-                    [addYears(month, 1)]: 0.0,
+                    [nextSettlement(month)!]: 0.0,
                   }))
                 }
               >
